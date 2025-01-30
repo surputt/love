@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Animated Heart Shape with Lines</title>
+    <title>Heart Shape Animation</title>
     <style>
         body {
             display: flex;
@@ -11,11 +11,32 @@
             align-items: center;
             height: 100vh;
             background-color: black;
+            overflow: hidden;
+        }
+
+        .container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+        }
+
+        .dot {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background-color: red;
+            border-radius: 50%;
+            transition: transform 2s ease-in-out;
         }
 
         svg {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 200px;
             height: 200px;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
         }
 
         path {
@@ -24,7 +45,7 @@
             fill: none;
             stroke-dasharray: 500;
             stroke-dashoffset: 500;
-            animation: drawHeart 2s linear forwards;
+            animation: drawHeart 2s ease-in-out forwards;
         }
 
         @keyframes drawHeart {
@@ -38,8 +59,46 @@
     </style>
 </head>
 <body>
-    <svg viewBox="0 0 200 200">
-        <path d="M100 180 L20 80 Q20 20, 100 50 Q180 20, 180 80 L100 180 Z" />
-    </svg>
+    <div class="container">
+        <svg viewBox="0 0 200 200">
+            <path d="M100 180 L20 80 Q20 20, 100 50 Q180 20, 180 80 L100 180 Z" />
+        </svg>
+    </div>
+
+    <script>
+        const container = document.querySelector(".container");
+        const svg = document.querySelector("svg");
+
+        // Fungsi untuk mendapatkan koordinat bentuk hati
+        function heartShape(t) {
+            const x = 100 + 80 * Math.sin(t) ** 3;
+            const y = 100 - 50 * (0.8125 * Math.cos(t) - 0.3125 * Math.cos(2 * t) - 0.125 * Math.cos(3 * t) - 0.0625 * Math.cos(4 * t));
+            return { x, y };
+        }
+
+        // Membuat titik-titik tersebar secara acak
+        for (let i = 0; i < 50; i++) {
+            const dot = document.createElement("div");
+            dot.classList.add("dot");
+            const randomX = Math.random() * 300 - 50;
+            const randomY = Math.random() * 300 - 50;
+            dot.style.transform = `translate(${randomX}px, ${randomY}px)`;
+            container.appendChild(dot);
+        }
+
+        // Animasi titik bergerak membentuk hati
+        setTimeout(() => {
+            document.querySelectorAll(".dot").forEach((dot, i) => {
+                const t = (i / 50) * (2 * Math.PI);
+                const { x, y } = heartShape(t);
+                dot.style.transform = `translate(${x - 100}px, ${y - 100}px)`;
+            });
+
+            // Setelah titik-titik terbentuk, tampilkan garis hati
+            setTimeout(() => {
+                svg.style.opacity = "1";
+            }, 2000);
+        }, 1000);
+    </script>
 </body>
 </html>
