@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Animasi Love dengan Titik</title>
+    <title>Animasi Love Berkedip</title>
     <style>
         body {
             margin: 0;
@@ -28,8 +28,9 @@
 
         const particles = [];
         const heartPoints = [];
+        let blinkPhase = 0;
 
-        // Fungsi untuk membuat bentuk hati dengan persamaan parametris
+        // Membuat titik-titik dalam bentuk hati
         function createHeartShape() {
             heartPoints.length = 0;
             for (let t = 0; t < Math.PI * 2; t += 0.05) {
@@ -42,7 +43,7 @@
             }
         }
 
-        // Class Partikel
+        // Kelas Partikel
         class Particle {
             constructor() {
                 this.x = Math.random() * canvas.width;
@@ -52,6 +53,7 @@
                 this.size = Math.random() * 4 + 1;
                 this.speed = Math.random() * 0.05 + 0.02;
                 this.color = `hsl(${Math.random() * 360}, 100%, 70%)`;
+                this.opacity = 1;
             }
 
             update() {
@@ -59,17 +61,24 @@
                 let dy = this.targetY - this.y;
                 this.x += dx * this.speed;
                 this.y += dy * this.speed;
+
+                // Efek berkedip setelah membentuk hati
+                if (Math.abs(dx) < 1 && Math.abs(dy) < 1) {
+                    this.opacity = 0.5 + 0.5 * Math.sin(blinkPhase);
+                }
             }
 
             draw() {
                 ctx.fillStyle = this.color;
+                ctx.globalAlpha = this.opacity;
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
                 ctx.fill();
+                ctx.globalAlpha = 1; // Reset transparansi agar tidak mempengaruhi elemen lain
             }
         }
 
-        // Membuat banyak partikel
+        // Membuat partikel
         function createParticles() {
             particles.length = 0;
             for (let i = 0; i < 300; i++) {
@@ -77,9 +86,11 @@
             }
         }
 
-        // Menjalankan animasi
+        // Looping animasi
         function animate() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            blinkPhase += 0.1;
+
             particles.forEach((particle, index) => {
                 let targetPoint = heartPoints[index % heartPoints.length];
                 particle.targetX = targetPoint.x;
@@ -87,6 +98,7 @@
                 particle.update();
                 particle.draw();
             });
+
             requestAnimationFrame(animate);
         }
 
