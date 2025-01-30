@@ -1,104 +1,107 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Heart Shape Animation</title>
+    <title>Animasi Love dengan Titik</title>
     <style>
         body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: black;
+            margin: 0;
             overflow: hidden;
+            background: black;
         }
-
-        .container {
-            position: relative;
-            width: 200px;
-            height: 200px;
-        }
-
-        .dot {
-            position: absolute;
-            width: 6px;
-            height: 6px;
-            background-color: red;
-            border-radius: 50%;
-            transition: transform 2s ease-in-out;
-        }
-
-        svg {
+        canvas {
             position: absolute;
             top: 0;
             left: 0;
-            width: 200px;
-            height: 200px;
-            opacity: 0;
-            transition: opacity 1s ease-in-out;
-        }
-
-        path {
-            stroke: red;
-            stroke-width: 4;
-            fill: none;
-            stroke-dasharray: 500;
-            stroke-dashoffset: 500;
-            animation: drawHeart 2s ease-in-out forwards;
-        }
-
-        @keyframes drawHeart {
-            from {
-                stroke-dashoffset: 500;
-            }
-            to {
-                stroke-dashoffset: 0;
-            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <svg viewBox="0 0 200 200">
-            <path d="M100 180 L20 80 Q20 20, 100 50 Q180 20, 180 80 L100 180 Z" />
-        </svg>
-    </div>
+    <canvas id="canvas"></canvas>
 
     <script>
-        const container = document.querySelector(".container");
-        const svg = document.querySelector("svg");
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
 
-        // Fungsi untuk mendapatkan koordinat bentuk hati
-        function heartShape(t) {
-            const x = 100 + 80 * Math.sin(t) ** 3;
-            const y = 100 - 50 * (0.8125 * Math.cos(t) - 0.3125 * Math.cos(2 * t) - 0.125 * Math.cos(3 * t) - 0.0625 * Math.cos(4 * t));
-            return { x, y };
+        const particles = [];
+        const heartPoints = [];
+
+        // Fungsi untuk membuat bentuk hati dengan persamaan parametris
+        function createHeartShape() {
+            heartPoints.length = 0;
+            for (let t = 0; t < Math.PI * 2; t += 0.05) {
+                let x = 16 * Math.pow(Math.sin(t), 3);
+                let y = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
+                heartPoints.push({
+                    x: (x * 20) + canvas.width / 2,
+                    y: (-y * 20) + canvas.height / 2
+                });
+            }
         }
 
-        // Membuat titik-titik tersebar secara acak
-        for (let i = 0; i < 50; i++) {
-            const dot = document.createElement("div");
-            dot.classList.add("dot");
-            const randomX = Math.random() * 300 - 50;
-            const randomY = Math.random() * 300 - 50;
-            dot.style.transform = `translate(${randomX}px, ${randomY}px)`;
-            container.appendChild(dot);
+        // Class Partikel
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.targetX = this.x;
+                this.targetY = this.y;
+                this.size = Math.random() * 4 + 1;
+                this.speed = Math.random() * 0.05 + 0.02;
+                this.color = `hsl(${Math.random() * 360}, 100%, 70%)`;
+            }
+
+            update() {
+                let dx = this.targetX - this.x;
+                let dy = this.targetY - this.y;
+                this.x += dx * this.speed;
+                this.y += dy * this.speed;
+            }
+
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
         }
 
-        // Animasi titik bergerak membentuk hati
-        setTimeout(() => {
-            document.querySelectorAll(".dot").forEach((dot, i) => {
-                const t = (i / 50) * (2 * Math.PI);
-                const { x, y } = heartShape(t);
-                dot.style.transform = `translate(${x - 100}px, ${y - 100}px)`;
+        // Membuat banyak partikel
+        function createParticles() {
+            particles.length = 0;
+            for (let i = 0; i < 300; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        // Menjalankan animasi
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach((particle, index) => {
+                let targetPoint = heartPoints[index % heartPoints.length];
+                particle.targetX = targetPoint.x;
+                particle.targetY = targetPoint.y;
+                particle.update();
+                particle.draw();
             });
+            requestAnimationFrame(animate);
+        }
 
-            // Setelah titik-titik terbentuk, tampilkan garis hati
-            setTimeout(() => {
-                svg.style.opacity = "1";
-            }, 2000);
-        }, 1000);
+        // Resize Event
+        window.addEventListener("resize", () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            createHeartShape();
+            createParticles();
+        });
+
+        // Inisialisasi animasi
+        createHeartShape();
+        createParticles();
+        animate();
     </script>
 </body>
 </html>
