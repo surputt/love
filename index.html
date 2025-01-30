@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moving Love Line</title>
+    <title>Lines Forming a Heart</title>
     <style>
         body {
             display: flex;
@@ -14,34 +14,47 @@
             overflow: hidden;
         }
 
-        .heart {
+        .container {
             position: relative;
-            width: 100px;
-            height: 100px;
-            animation: pulse 2s infinite ease-in-out;
+            width: 200px;
+            height: 200px;
         }
 
-        .heart::before,
-        .heart::after {
-            content: '';
+        .line {
             position: absolute;
-            width: 100px;
-            height: 160px;
-            border: 3px solid red;
+            width: 80px;
+            height: 150px;
+            border: 2px solid red;
             border-radius: 50px 50px 0 0;
-            background: none;
+            opacity: 0;
+            animation: appearMove 3s ease-in-out forwards;
         }
 
-        .heart::before {
-            left: 50px;
+        .line:nth-child(odd) {
+            animation-delay: calc(var(--i) * 0.2s);
+            left: -200px;
             transform: rotate(-45deg);
-            animation: moveLeft 2s infinite ease-in-out alternate;
         }
 
-        .heart::after {
-            left: 0;
+        .line:nth-child(even) {
+            animation-delay: calc(var(--i) * 0.2s);
+            right: -200px;
             transform: rotate(45deg);
-            animation: moveRight 2s infinite ease-in-out alternate;
+        }
+
+        @keyframes appearMove {
+            0% {
+                opacity: 0;
+                transform: translateX(0) translateY(0) scale(0.5);
+            }
+            50% {
+                opacity: 1;
+                transform: translateX(50px) translateY(50px) scale(1);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0) translateY(0) scale(1);
+            }
         }
 
         @keyframes pulse {
@@ -52,21 +65,19 @@
                 transform: scale(1.1);
             }
         }
-
-        @keyframes moveLeft {
-            0% { transform: rotate(-45deg) translateX(0) translateY(0); }
-            50% { transform: rotate(-42deg) translateX(-5px) translateY(5px); }
-            100% { transform: rotate(-45deg) translateX(0) translateY(0); }
-        }
-
-        @keyframes moveRight {
-            0% { transform: rotate(45deg) translateX(0) translateY(0); }
-            50% { transform: rotate(42deg) translateX(5px) translateY(5px); }
-            100% { transform: rotate(45deg) translateX(0) translateY(0); }
-        }
     </style>
 </head>
 <body>
-    <div class="heart"></div>
+    <div class="container">
+        <!-- Banyak garis yang akan membentuk hati -->
+        <div class="line" style="--i:1;"></div>
+        <div class="line" style="--i:2;"></div>
+        <div class="line" style="--i:3;"></div>
+        <div class="line" style="--i:4;"></div>
+        <div class="line" style="--i:5;"></div>
+        <div class="line" style="--i:6;"></div>
+        <div class="line" style="--i:7;"></div>
+        <div class="line" style="--i:8;"></div>
+    </div>
 </body>
 </html>
