@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lines Forming a Heart</title>
+    <title>Animated Heart with Lines</title>
     <style>
         body {
             display: flex;
@@ -22,62 +22,60 @@
 
         .line {
             position: absolute;
-            width: 80px;
-            height: 150px;
-            border: 2px solid red;
-            border-radius: 50px 50px 0 0;
+            width: 6px;
+            height: 100px;
+            background-color: red;
             opacity: 0;
-            animation: appearMove 3s ease-in-out forwards;
+            animation: drawHeart 2s ease-in-out forwards;
         }
 
-        .line:nth-child(odd) {
-            animation-delay: calc(var(--i) * 0.2s);
-            left: -200px;
-            transform: rotate(-45deg);
+        /* Garis sisi kiri hati */
+        .line.left {
+            transform-origin: bottom right;
+            left: 50%;
+            bottom: 50px;
+            transform: rotate(60deg);
+            animation-delay: calc(var(--i) * 0.1s);
         }
 
-        .line:nth-child(even) {
-            animation-delay: calc(var(--i) * 0.2s);
-            right: -200px;
-            transform: rotate(45deg);
+        /* Garis sisi kanan hati */
+        .line.right {
+            transform-origin: bottom left;
+            left: 50%;
+            bottom: 50px;
+            transform: rotate(-60deg);
+            animation-delay: calc(var(--i) * 0.1s);
         }
 
-        @keyframes appearMove {
+        @keyframes drawHeart {
             0% {
                 opacity: 0;
-                transform: translateX(0) translateY(0) scale(0.5);
+                transform: translateY(30px) scale(0.8);
             }
             50% {
                 opacity: 1;
-                transform: translateX(50px) translateY(50px) scale(1);
+                transform: translateY(0) scale(1);
             }
             100% {
                 opacity: 1;
-                transform: translateX(0) translateY(0) scale(1);
-            }
-        }
-
-        @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.1);
+                transform: translateY(0) scale(1);
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Banyak garis yang akan membentuk hati -->
-        <div class="line" style="--i:1;"></div>
-        <div class="line" style="--i:2;"></div>
-        <div class="line" style="--i:3;"></div>
-        <div class="line" style="--i:4;"></div>
-        <div class="line" style="--i:5;"></div>
-        <div class="line" style="--i:6;"></div>
-        <div class="line" style="--i:7;"></div>
-        <div class="line" style="--i:8;"></div>
+        <!-- Garis sisi kiri -->
+        <div class="line left" style="--i:1;"></div>
+        <div class="line left" style="--i:2;"></div>
+        <div class="line left" style="--i:3;"></div>
+        <div class="line left" style="--i:4;"></div>
+
+        <!-- Garis sisi kanan -->
+        <div class="line right" style="--i:1;"></div>
+        <div class="line right" style="--i:2;"></div>
+        <div class="line right" style="--i:3;"></div>
+        <div class="line right" style="--i:4;"></div>
     </div>
 </body>
 </html>
