@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Love u</title>
+    <title>Love U</title>
     <style>
         body {
             margin: 0;
@@ -26,13 +26,13 @@
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
-        const particles = [];
-        const heartPoints = [];
-        let blinkPhase = 0;
+        let particles = [];
+        let heartPoints = [];
+        let phase = 0;
 
-        // Membuat titik-titik dalam bentuk hati
+        // Membuat bentuk hati dengan koordinat parametrik
         function createHeartShape() {
-            heartPoints.length = 0;
+            heartPoints = [];
             for (let t = 0; t < Math.PI * 2; t += 0.05) {
                 let x = 16 * Math.pow(Math.sin(t), 3);
                 let y = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
@@ -46,25 +46,39 @@
         // Kelas Partikel
         class Particle {
             constructor() {
+                this.reset();
+            }
+
+            reset() {
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height;
                 this.targetX = this.x;
                 this.targetY = this.y;
                 this.size = Math.random() * 4 + 1;
-                this.speed = Math.random() * 0.05 + 0.02;
+                this.speed = Math.random() * 0.02 + 0.02;
                 this.color = `hsl(${Math.random() * 360}, 100%, 70%)`;
+                this.explode = false;
                 this.opacity = 1;
             }
 
             update() {
-                let dx = this.targetX - this.x;
-                let dy = this.targetY - this.y;
-                this.x += dx * this.speed;
-                this.y += dy * this.speed;
+                if (!this.explode) {
+                    let dx = this.targetX - this.x;
+                    let dy = this.targetY - this.y;
+                    this.x += dx * this.speed;
+                    this.y += dy * this.speed;
 
-                // Efek berkedip setelah membentuk hati
-                if (Math.abs(dx) < 1 && Math.abs(dy) < 1) {
-                    this.opacity = 0.5 + 0.5 * Math.sin(blinkPhase);
+                    if (Math.abs(dx) < 2 && Math.abs(dy) < 2) {
+                        this.explode = true;
+                    }
+                } else {
+                    // Mekar seperti kembang api
+                    this.x += (Math.random() - 0.5) * 10;
+                    this.y += (Math.random() - 0.5) * 10;
+                    this.opacity -= 0.02;
+                    if (this.opacity <= 0) {
+                        this.reset();
+                    }
                 }
             }
 
@@ -74,13 +88,13 @@
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
                 ctx.fill();
-                ctx.globalAlpha = 1; // Reset transparansi agar tidak mempengaruhi elemen lain
+                ctx.globalAlpha = 1;
             }
         }
 
         // Membuat partikel
         function createParticles() {
-            particles.length = 0;
+            particles = [];
             for (let i = 0; i < 300; i++) {
                 particles.push(new Particle());
             }
@@ -89,12 +103,12 @@
         // Looping animasi
         function animate() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            blinkPhase += 0.1;
+            phase += 0.02;
 
             particles.forEach((particle, index) => {
                 let targetPoint = heartPoints[index % heartPoints.length];
-                particle.targetX = targetPoint.x;
-                particle.targetY = targetPoint.y;
+                particle.targetX = targetPoint.x + Math.sin(phase) * 5;
+                particle.targetY = targetPoint.y + Math.cos(phase) * 5;
                 particle.update();
                 particle.draw();
             });
